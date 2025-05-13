@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>User Profile</title>
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/profile.css">
+</head>
+<body>
+
+<!-- Shared navbar -->
+<div th:replace="fragments/navbar :: navbar"></div>
+
+<div class="container">
+    <h2>Your Profile</h2>
+
+    <p><strong>Name:</strong> <span th:text="${user.name}"></span></p>
+    <p><strong>Email:</strong> <span th:text="${user.email}"></span></p>
+    <p><strong>Role:</strong> <span th:text="${user.role}"></span></p>
+
+    <!-- Role-based redirection -->
+    <div>
+        <a th:if="${user.role == 'ADMIN'}" th:href="@{/admin/dashboard}">← Back to Admin Dashboard</a>
+        <a th:if="${user.role != 'ADMIN'}" th:href="@{/dashboard}">← Back to User Dashboard</a>
+    </div>
+</div>
+
+<!-- Shared footer -->
+<div th:replace="fragments/footer :: footer"></div>
+
+</body>
+</html>

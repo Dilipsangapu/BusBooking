@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/admin_dashboard.css">
+</head>
+<body>
+
+
+<!-- Navbar -->
+<div th:replace="fragments/navbar :: navbar"></div>
+
+<div class="container">
+    <h2>Admin Panel - Manage Buses</h2>
+    <a th:href="@{/admin/add}" class="add-bus-btn">➕ Add New Bus</a>
+    <hr>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Operator</th>
+            <th>From</th>
+            <th>To</th>
+            <th>Departure</th>
+            <th>Arrival</th>
+            <th>Seater ₹</th>
+            <th>Sleeper ₹</th>
+            <th>Seater Seats</th>
+            <th>Sleeper Seats</th>
+            <th>Total Seats</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="bus : ${buses}">
+            <td th:text="${bus.operatorName}">Operator</td>
+            <td th:text="${bus.from}">From</td>
+            <td th:text="${bus.to}">To</td>
+            <td th:text="${bus.departureTime}">Dep</td>
+            <td th:text="${bus.arrivalTime}">Arr</td>
+            <td th:text="${bus.seaterPrice}">0</td>
+            <td th:text="${bus.sleeperPrice}">0</td>
+            <td th:text="${bus.seaterCount}">0</td>
+            <td th:text="${bus.sleeperCount}">0</td>
+            <td th:text="${bus.totalSeats}">0</td>
+            <td>
+                <a th:href="@{'/admin/edit/' + ${bus.id}}" class="edit-btn">✏️ Edit</a> |
+                <a th:href="@{'/admin/delete/' + ${bus.id}}" class="delete-btn" onclick="return confirm('Delete this bus?')">❌ Delete</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Footer -->
+<div th:replace="fragments/footer :: footer"></div>
+
+</body>
+</html>

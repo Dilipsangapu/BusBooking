@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>All Bookings - Admin</title>
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/booking_admin.css">
+</head>
+<body>
+
+<div th:replace="fragments/navbar :: navbar"></div>
+
+<div class="container">
+    <h2>🧾 All Bookings (Admin View)</h2>
+
+    <table border="1" cellpadding="10">
+        <thead>
+        <tr>
+            <th>USER</th>
+            <th>TRAVEL DATE</th>
+            <th>PASSENGERS</th>
+            <th>TOTAL PAID</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="booking : ${bookings}">
+            <td>
+                <b th:text="${userMap[booking.userId]?.name}">User Name</b><br>
+                <small th:text="${userMap[booking.userId]?.email}">email@example.com</small>
+            </td>
+            <td th:text="${#dates.format(booking.travelDate, 'dd-MM-yyyy')}">12-05-2025</td>
+            <td>
+                <ul>
+                    <li th:each="p : ${booking.passengers}">
+                        👤 <span th:text="${p.name}">Name</span> |
+                        Age: <span th:text="${p.age}">0</span> |
+                        Gender: <span th:text="${p.gender}">M</span> |
+                        Seat: <span th:text="${p.seatNumber}">0</span> (<span th:text="${p.seatType}">Seater</span>)
+                    </li>
+                </ul>
+            </td>
+            <td>₹<span th:text="${booking.totalAmount}">0.00</span></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <a href="/admin/dashboard">← Back to Dashboard</a>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Search Buses</title>
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/search.css">
+
+</head>
+<body>
+<div class="container">
+    <h2>Search for Buses</h2>
+    <form method="get" th:action="@{/search}">
+        <label>From</label>
+        <input type="text" name="from" required>
+
+        <label>To</label>
+        <input type="text" name="to" required>
+
+        <button type="submit">Search</button>
+    </form>
+
+    <div th:if="${buses}">
+        <h3>Results:</h3>
+        <div th:each="bus : ${buses}">
+            <p>
+                <strong th:text="${bus.operatorName}"></strong> –
+                <span th:text="${bus.from}"></span> to
+                <span th:text="${bus.to}"></span><br/>
+                <a th:href="@{/bus/{id}(id=${bus.id})}">View Details</a>
+            </p>
+            <hr/>
+        </div>
+    </div>
+</div>
+</body>
+</html>
