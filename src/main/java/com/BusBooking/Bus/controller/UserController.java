@@ -8,6 +8,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -34,14 +37,30 @@ public class UserController {
 
     @PostMapping("/register")
     @Operation(summary = "Register a new user")
-    public String register(@ModelAttribute User user, Model model) {
+    public Object register(@ModelAttribute User user,
+                           @RequestParam(required = false, defaultValue = "false") boolean json,
+                           Model model) {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            if (json) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(Map.of("error", "Email already exists."));
+            }
             model.addAttribute("error", "Email already exists.");
             return "register";
         }
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole("USER");
         userRepository.save(user);
+
+        if (json) {
+            return ResponseEntity.ok(Map.of(
+                    "message", "User registered successfully",
+                    "userId", user.getId(),
+                    "email", user.getEmail()
+            ));
+        }
+
         return "redirect:/login";
     }
 
@@ -56,31 +75,74 @@ public class UserController {
 
     @GetMapping("/dashboard")
     @Operation(summary = "User dashboard")
-    public String dashboard(Principal principal, Model model) {
+    public Object dashboard(Principal principal,
+                            @RequestParam(required = false, defaultValue = "false") boolean json,
+                            Model model) {
         String email = principal.getName();
-        userRepository.findByEmail(email).ifPresent(user -> model.addAttribute("user", user));
+        Optional<User> userOpt = userRepository.findByEmail(email);
+
+        if (userOpt.isEmpty()) {
+            return json ? ResponseEntity.status(401).body(Map.of("error", "Unauthorized")) : "redirect:/login";
+        }
+
+        User user = userOpt.get();
+
+        if (json) {
+            return ResponseEntity.ok(Map.of(
+                    "user", user,
+                    "message", "Dashboard data fetched successfully"
+            ));
+        }
+
+        model.addAttribute("user", user);
         return "dashboard";
     }
 
     @GetMapping("/profile")
     @Operation(summary = "User profile")
-    public String userProfile(Principal principal, Model model) {
+    public Object userProfile(Principal principal,
+                              @RequestParam(required = false, defaultValue = "false") boolean json,
+                              Model model) {
         String email = principal.getName();
-        userRepository.findByEmail(email).ifPresent(user -> model.addAttribute("user", user));
+        Optional<User> userOpt = userRepository.findByEmail(email);
+
+        if (userOpt.isEmpty()) {
+            return json ? ResponseEntity.status(401).body(Map.of("error", "Unauthorized")) : "redirect:/login";
+        }
+
+        User user = userOpt.get();
+
+        if (json) {
+            return ResponseEntity.ok(Map.of("user", user));
+        }
+
+        model.addAttribute("user", user);
         return "profile";
     }
 
     @GetMapping("/user/history")
     @Operation(summary = "View user's booking history")
-    public String bookingHistory(Principal principal, Model model) {
+    public Object bookingHistory(Principal principal,
+                                 @RequestParam(required = false, defaultValue = "false") boolean json,
+                                 Model model) {
         String email = principal.getName();
         Optional<User> userOpt = userRepository.findByEmail(email);
-        if (userOpt.isPresent()) {
-            String userId = userOpt.get().getId();
-            List<Booking> bookings = bookingRepository.findByUserId(userId);
-            model.addAttribute("bookings", bookings);
-            return "booking_history";
+
+        if (userOpt.isEmpty()) {
+            return json ? ResponseEntity.status(401).body(Map.of("error", "Unauthorized")) : "redirect:/login";
         }
-        return "redirect:/login";
+
+        User user = userOpt.get();
+        List<Booking> bookings = bookingRepository.findByUserId(user.getId());
+
+        if (json) {
+            return ResponseEntity.ok(Map.of(
+                    "user", Map.of("id", user.getId(), "email", user.getEmail()),
+                    "bookings", bookings
+            ));
+        }
+
+        model.addAttribute("bookings", bookings);
+        return "booking_history";
     }
 }

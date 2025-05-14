@@ -8,13 +8,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-
-import java.io.IOException;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 @Configuration
 @RequiredArgsConstructor
@@ -27,11 +27,19 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        // ✅ Always permit Swagger UI resources
                         .requestMatchers(
-                                "/login", "/register", "/css/**", "/js/**", "/images/**", "/book/**",
-                                "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/v3/api-docs.yaml"
+                                "/swagger-ui.html", "/swagger-ui/**",
+                                "/v3/api-docs/**", "/v3/api-docs.yaml"
                         ).permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+
+                        // ✅ Permit Swagger API calls (based on User-Agent)
+                        .requestMatchers(new SwaggerRequestMatcher()).permitAll()
+
+                        // ✅ Allow login, registration, static resources
+                        .requestMatchers("/login", "/register", "/logout", "/css/**", "/js/**", "/images/**").permitAll()
+
+                        // 🔐 Protect everything else for browser
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -41,11 +49,15 @@ public class SecurityConfig {
                         .failureUrl("/login?error=true")
                         .permitAll()
                 )
+                .httpBasic(httpBasic -> {}) // Optional for Swagger fallback
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout=true")
                         .invalidateHttpSession(true)
                         .permitAll()
+                )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 );
 
         return http.build();
@@ -53,10 +65,10 @@ public class SecurityConfig {
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userDetailsService);
+        provider.setPasswordEncoder(passwordEncoder());
+        return provider;
     }
 
     @Bean
@@ -76,5 +88,14 @@ public class SecurityConfig {
                 response.sendRedirect("/dashboard");
             }
         };
+    }
+
+    // ✅ Detect Swagger requests by User-Agent
+    static class SwaggerRequestMatcher implements RequestMatcher {
+        @Override
+        public boolean matches(HttpServletRequest request) {
+            String userAgent = request.getHeader("User-Agent");
+            return userAgent != null && userAgent.toLowerCase().contains("swagger");
+        }
     }
 }
