@@ -14,20 +14,16 @@ import java.util.List;
 public class Bus {
     @Id
     private String id;
-
     private String operatorName;
     private String from;
     private String to;
     private String departureTime;
     private String arrivalTime;
-
     private Double seaterPrice;
     private Double sleeperPrice;
-
     private Integer seaterCount;
     private Integer sleeperCount;
     private Integer totalSeats;
-
     private List<Integer> bookedSeats;
 }
 

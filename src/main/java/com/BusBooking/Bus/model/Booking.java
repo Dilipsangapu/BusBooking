@@ -15,12 +15,15 @@ import java.util.List;
 public class Booking {
     @Id
     private String id;
-
+    private String paymentId;
+    private String orderId;
+    private String receipt;
+    private String paymentStatus;
     private String userId;
     private String busId;
     private Date bookingDate;
     private Double totalAmount;
     private Date travelDate;
-
+    private String email;
     private List<Passenger> passengers;
 }

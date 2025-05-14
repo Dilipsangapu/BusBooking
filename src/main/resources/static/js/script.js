@@ -35,7 +35,6 @@ document.addEventListener("DOMContentLoaded", function () {
             seatCounts.Seater = parseInt(document.body.getAttribute("data-seater")) || 10;
             seatCounts.Sleeper = parseInt(document.body.getAttribute("data-sleeper")) || 5;
 
-            // Reset on new date
             selectedSeatsInSession.Seater.clear();
             selectedSeatsInSession.Sleeper.clear();
 
@@ -111,22 +110,18 @@ document.addEventListener("DOMContentLoaded", function () {
                 e.preventDefault();
                 if (btn.disabled) return;
 
-                // Deselect previously selected seat for this passenger
                 const previous = parseInt(selectedInput.value);
                 if (previous && selectedSeatsInSession[type].has(previous)) {
                     selectedSeatsInSession[type].delete(previous);
                 }
 
-                // Update visual
                 layout.querySelectorAll(".seat").forEach(b => b.classList.remove("selected"));
                 btn.classList.add("selected");
 
-                // Save new selection
                 const seatNum = parseInt(btn.dataset.seatNumber);
                 selectedSeatsInSession[type].add(seatNum);
                 selectedInput.value = seatNum;
 
-                // Re-render all other seat layouts to reflect blocking
                 refreshAllSeatLayouts();
             });
 
@@ -150,3 +145,68 @@ document.addEventListener("DOMContentLoaded", function () {
         addPassenger();
     });
 });
+
+// -------------------- Razorpay Integration + Booking + Conflict Handling --------------------
+function initiatePayment() {
+    const travelDate = document.getElementById("travelDateInput").value;
+    if (!travelDate) {
+        alert("Please select a travel date");
+        return;
+    }
+
+    fetch("/api/payment/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            amount: 500,
+            currency: "INR",
+            receipt: "bus_" + new Date().getTime()
+        })
+    })
+    .then(res => res.json())
+    .then(order => {
+        const options = {
+            key: 'rzp_test_38I5IEufjhiOFj',
+            amount: order.amount,
+            currency: order.currency,
+            name: "Bus Ticket Booking",
+            description: "Payment for ticket",
+            order_id: order.id,
+            handler: function (response) {
+                const travelDate = document.getElementById("travelDateInput").value;
+                const form = document.getElementById("bookingForm");
+
+                const formData = new FormData(form);
+              formData.set("travelDate", travelDate);
+                formData.append("paymentId", response.razorpay_payment_id);
+                formData.append("orderId", order.id);
+                formData.append("receipt", order.receipt);
+
+                fetch(form.action, {
+                    method: "POST",
+                    body: formData
+                })
+                .then(async (res) => {
+                    if (!res.ok) {
+                        const errData = await res.json();
+                        alert("❌ " + (errData.error || "Booking failed."));
+                        return;
+                    }
+                    const data = await res.json();
+                    window.location.href = `/confirmation?bookingId=${data.bookingId}&status=success`;
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("Something went wrong during booking.");
+                });
+            },
+            theme: { color: "#3399cc" }
+        };
+        const rzp = new Razorpay(options);
+        rzp.open();
+    })
+    .catch(err => {
+        alert("❌ Payment failed.");
+        console.error(err);
+    });
+}

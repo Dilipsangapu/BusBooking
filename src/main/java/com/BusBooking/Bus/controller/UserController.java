@@ -145,4 +145,26 @@ public class UserController {
         model.addAttribute("bookings", bookings);
         return "booking_history";
     }
+    @GetMapping("/forgot-password")
+    public String showForgotPasswordPage() {
+        return "forgot-password"; // will render forgot-password.html
+    }
+    @PostMapping("/forgot-password")
+    public String resetPassword(@RequestParam String email,
+                                @RequestParam String newPassword,
+                                Model model) {
+        Optional<User> userOpt = userRepository.findByEmail(email);
+        if (userOpt.isEmpty()) {
+            model.addAttribute("error", "No user found with that email.");
+            return "forgot-password";
+        }
+
+        User user = userOpt.get();
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        model.addAttribute("message", "✅ Password reset successfully. Please log in.");
+        return "forgot-password";
+    }
+
 }

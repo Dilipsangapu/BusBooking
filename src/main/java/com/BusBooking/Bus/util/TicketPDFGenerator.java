@@ -51,6 +51,18 @@ public class TicketPDFGenerator {
                     + ", Type: " + p.getSeatType()));
         }
 
+        doc.add(new Paragraph(" "));
+
+        // ✅ Razorpay Payment Details (Assuming available in Booking object)
+        if (booking.getPaymentId() != null) {
+            doc.add(new Paragraph("💳 Payment Details").setBold());
+            doc.add(new Paragraph("Payment ID: " + booking.getPaymentId()));
+            doc.add(new Paragraph("Order ID: " + booking.getOrderId()));
+            doc.add(new Paragraph("Receipt: " + booking.getReceipt()));
+            doc.add(new Paragraph("Status: " + booking.getPaymentStatus()));
+            doc.add(new Paragraph(" "));
+        }
+
         // QR Code content
         String qrContent = "Bus: " + bus.getOperatorName()
                 + " | From: " + bus.getFrom()
@@ -63,7 +75,6 @@ public class TicketPDFGenerator {
         var matrix = qrCodeWriter.encode(qrContent, BarcodeFormat.QR_CODE, 150, 150);
         MatrixToImageWriter.writeToStream(matrix, "PNG", qrOutput);
 
-        // Add QR Code to PDF
         Image qrImage = new Image(ImageDataFactory.create(qrOutput.toByteArray()));
         qrImage.setTextAlignment(TextAlignment.CENTER);
         doc.add(new Paragraph("\nScan QR for quick ticket info").setTextAlignment(TextAlignment.CENTER));

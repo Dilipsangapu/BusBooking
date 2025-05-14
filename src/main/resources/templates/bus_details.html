@@ -62,7 +62,7 @@
             <div id="passengerContainer"></div>
 
             <button type="button" id="addPassenger">+ Add Passenger</button>
-            <button type="submit">Book Now</button>
+            <button type="button" onclick="initiatePayment()">Pay & Book</button>
         </div>
     </form>
 </div>
@@ -70,6 +70,7 @@
 <script th:inline="javascript">
     const busId = /*[[${bus.id}]]*/ "";
 </script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="/js/script.js"></script>
 </body>
 </html>

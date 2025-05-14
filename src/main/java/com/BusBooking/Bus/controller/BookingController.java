@@ -7,9 +7,11 @@ import com.BusBooking.Bus.model.User;
 import com.BusBooking.Bus.repository.BookingRepository;
 import com.BusBooking.Bus.repository.BusRepository;
 import com.BusBooking.Bus.repository.UserRepository;
+import com.BusBooking.Bus.service.EmailService;
 import com.BusBooking.Bus.util.TicketPDFGenerator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -32,10 +34,11 @@ public class BookingController {
     private final BookingRepository bookingRepository;
     private final BusRepository busRepository;
     private final UserRepository userRepository;
+    private final EmailService emailService;
 
     @PostMapping("/book/{busId}")
     @ResponseBody
-    @Operation(summary = "Book a bus (returns JSON for Swagger)")
+    @Operation(summary = "Book a bus")
     public ResponseEntity<?> bookBus(@PathVariable String busId,
                                      @RequestParam List<String> passengerName,
                                      @RequestParam List<Integer> passengerAge,
@@ -43,44 +46,60 @@ public class BookingController {
                                      @RequestParam String seatNumber,
                                      @RequestParam List<String> seatType,
                                      @RequestParam(required = false) String travelDate,
+                                     @RequestParam(required = false) String paymentId,
+                                     @RequestParam(required = false) String orderId,
+                                     @RequestParam(required = false) String receipt,
                                      Principal principal) {
 
         if (principal == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "User must be logged in"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "User must be logged in"));
         }
 
         String email = principal.getName();
         Optional<User> userOpt = userRepository.findByEmail(email);
         if (userOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "User not found"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "User not found"));
         }
 
         if (travelDate == null || travelDate.isBlank()) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", "Travel date must not be null or blank"));
+            return ResponseEntity.badRequest().body(Map.of("error", "Travel date is required"));
         }
 
         Date travelSqlDate;
         try {
             travelSqlDate = Date.valueOf(travelDate);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", "Invalid travel date format. Use yyyy-MM-dd"));
+            return ResponseEntity.badRequest().body(Map.of("error", "Invalid travel date format"));
         }
 
         User user = userOpt.get();
         Bus bus = busRepository.findById(busId).orElse(null);
         if (bus == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", "Bus not found"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Bus not found"));
         }
 
         List<Integer> seatNumbers = Arrays.stream(seatNumber.split(","))
-                .map(String::trim)
-                .map(Integer::parseInt)
-                .toList();
+                .map(String::trim).map(Integer::parseInt).toList();
+
+        // ✅ Step: Block seats already booked (respecting seatType)
+        List<Booking> existingBookings = bookingRepository.findByBusIdAndTravelDate(busId, travelSqlDate);
+        Set<String> alreadyBooked = new HashSet<>();
+
+        for (Booking b : existingBookings) {
+            for (Passenger p : b.getPassengers()) {
+                alreadyBooked.add(p.getSeatType().toLowerCase() + "-" + p.getSeatNumber());
+            }
+        }
+
+        for (int i = 0; i < seatNumbers.size(); i++) {
+            String key = seatType.get(i).toLowerCase() + "-" + seatNumbers.get(i);
+            if (alreadyBooked.contains(key)) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                        Map.of("error", "Seat " + seatNumbers.get(i) + " (" + seatType.get(i) + ") is already booked.")
+                );
+            }
+        }
+
 
         List<Passenger> passengers = new ArrayList<>();
         for (int i = 0; i < passengerName.size(); i++) {
@@ -89,19 +108,28 @@ public class BookingController {
                     passengerAge.get(i),
                     passengerGender.get(i),
                     seatNumbers.get(i),
-                    seatType.get(i)));
+                    seatType.get(i)
+            ));
         }
 
         double total = passengers.stream().mapToDouble(p ->
-                p.getSeatType().equalsIgnoreCase("Seater") ? bus.getSeaterPrice() : bus.getSleeperPrice()).sum();
+                p.getSeatType().equalsIgnoreCase("Seater")
+                        ? bus.getSeaterPrice()
+                        : bus.getSleeperPrice()
+        ).sum();
 
         Booking booking = Booking.builder()
                 .busId(busId)
                 .userId(user.getId())
+                .email(user.getEmail())
                 .bookingDate(new Date(System.currentTimeMillis()))
                 .travelDate(travelSqlDate)
                 .passengers(passengers)
                 .totalAmount(total)
+                .paymentId(paymentId)
+                .orderId(orderId)
+                .receipt(receipt)
+                .paymentStatus("Success")
                 .build();
 
         if (bus.getBookedSeats() == null) bus.setBookedSeats(new ArrayList<>());
@@ -110,6 +138,15 @@ public class BookingController {
         busRepository.save(bus);
         bookingRepository.save(booking);
 
+        try {
+            byte[] pdf = TicketPDFGenerator.generateTicketPDF(booking, bus);
+            emailService.sendTicket(booking.getEmail(), pdf, "ticket_" + booking.getId() + ".pdf");
+        } catch (MessagingException | IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to generate PDF", e);
+        }
+
         return ResponseEntity.ok(Map.of(
                 "message", "Booking successful",
                 "bookingId", booking.getId(),
@@ -117,27 +154,23 @@ public class BookingController {
         ));
     }
 
-    @GetMapping("/history")
-    @Operation(summary = "View user booking history (browser only)")
-    public String bookingHistory(Principal principal, Model model) {
-        if (principal == null) return "redirect:/login";
+    @GetMapping("/confirmation")
+    @Operation(summary = "Booking confirmation page")
+    public String showConfirmation(@RequestParam String bookingId,
+                                   @RequestParam String status,
+                                   Model model) {
+        Booking booking = bookingRepository.findById(bookingId).orElse(null);
+        Bus bus = booking != null ? busRepository.findById(booking.getBusId()).orElse(null) : null;
 
-        String email = principal.getName();
-        Optional<User> userOpt = userRepository.findByEmail(email);
-        if (userOpt.isEmpty()) return "redirect:/login";
-
-        User user = userOpt.get();
-        List<Booking> bookings = bookingRepository.findByUserId(user.getId());
-        Map<String, Bus> busMap = new HashMap<>();
-        for (Booking b : bookings) {
-            busRepository.findById(b.getBusId()).ifPresent(bus -> busMap.put(b.getId(), bus));
+        if (booking == null || bus == null) {
+            model.addAttribute("message", "Booking not found.");
+            return "error";
         }
 
-        model.addAttribute("bookings", bookings);
-        model.addAttribute("busMap", busMap);
-        model.addAttribute("user", user);
-
-        return "history";
+        model.addAttribute("status", status);
+        model.addAttribute("booking", booking);
+        model.addAttribute("bus", bus);
+        return "confirmation";
     }
 
     @GetMapping("/download-ticket/{id}")
@@ -165,7 +198,7 @@ public class BookingController {
 
     @GetMapping("/booked-seats/{busId}")
     @ResponseBody
-    @Operation(summary = "Get booked seat numbers by seat type for a bus on a given date")
+    @Operation(summary = "Get booked seats by type for a bus")
     public Map<String, Object> getAllBookedSeats(@PathVariable String busId,
                                                  @RequestParam(required = false) String travelDate) {
         if (travelDate == null || travelDate.isBlank()) {
@@ -176,7 +209,7 @@ public class BookingController {
         try {
             travelSqlDate = Date.valueOf(travelDate);
         } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid date format. Expected yyyy-MM-dd");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid date format");
         }
 
         List<Booking> bookings = bookingRepository.findByBusIdAndTravelDate(busId, travelSqlDate);
@@ -195,4 +228,28 @@ public class BookingController {
 
         return Map.of("Seater", seater, "Sleeper", sleeper);
     }
+    @GetMapping("/history")
+    @Operation(summary = "Booking history page")
+    public String bookingHistory(Principal principal, Model model) {
+        if (principal == null) return "redirect:/login";
+
+        String email = principal.getName();
+        Optional<User> userOpt = userRepository.findByEmail(email);
+        if (userOpt.isEmpty()) return "redirect:/login";
+
+        User user = userOpt.get();
+        List<Booking> bookings = bookingRepository.findByUserId(user.getId());
+
+        // Load bus info for each booking
+        Map<String, Bus> busMap = new HashMap<>();
+        for (Booking b : bookings) {
+            busRepository.findById(b.getBusId()).ifPresent(bus -> busMap.put(b.getId(), bus));
+        }
+
+        model.addAttribute("bookings", bookings);
+        model.addAttribute("busMap", busMap);
+        model.addAttribute("user", user);
+        return "history"; // <-- must match history.html
+    }
+
 }

@@ -37,7 +37,7 @@ public class SecurityConfig {
                         .requestMatchers(new SwaggerRequestMatcher()).permitAll()
 
                         // ✅ Allow login, registration, static resources
-                        .requestMatchers("/login", "/register", "/logout", "/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/login", "/register", "/forgot-password", "/logout", "/css/**", "/js/**", "/images/**").permitAll()
 
                         // 🔐 Protect everything else for browser
                         .anyRequest().authenticated()

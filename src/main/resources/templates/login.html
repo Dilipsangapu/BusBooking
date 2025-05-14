@@ -3,6 +3,23 @@
 <head>
     <title>Login</title>
     <link rel="stylesheet" href="/css/login.css">
+    <style>
+        .forgot-password {
+            text-align: right;
+            margin-top: 6px;
+            margin-bottom: 12px;
+        }
+
+        .forgot-password a {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
@@ -18,9 +35,11 @@
 
         <label>Password</label>
         <input type="password" name="password" class="form-control" required>
-
         <button type="submit" class="btn btn-success">Login</button>
         <p>New user? <a th:href="@{/register}">Register</a></p>
+        <div class="forgot-password">
+            <a th:href="@{/forgot-password}">Forgot Password?</a>
+        </div>
     </form>
 </div>
 </body>
