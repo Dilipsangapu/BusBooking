@@ -1,6 +1,6 @@
 body {
     font-family: 'Segoe UI', sans-serif;
-    background-color: #f9f9f9;
+    background-color: #f0fff0; /* Light minty background */
     margin: 0;
     padding: 0;
 }
@@ -34,14 +34,14 @@ th, td {
 }
 
 th {
-    background-color: #3498db;
-    color: #fff;
+    background-color: #98FF98; /* Mint green header */
+    color: #2c3e50;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
 
 tr:nth-child(even) {
-    background-color: #f2f2f2;
+    background-color: #f4fff4; /* Very light mint for alternate rows */
 }
 
 ul {
@@ -58,10 +58,12 @@ a {
     display: inline-block;
     margin-top: 20px;
     text-decoration: none;
-    color: #2980b9;
+    color: #2c3e50;
     font-weight: bold;
+    transition: color 0.3s ease;
 }
 
 a:hover {
     text-decoration: underline;
+    color: #7ed97e;
 }

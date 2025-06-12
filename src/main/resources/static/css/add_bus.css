@@ -1,6 +1,6 @@
 body {
     font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(to right, #a8edea, #fed6e3); /* Mint gradient */
+    background: linear-gradient(to right, #98FF98, #d9fdd3); /* Updated mint gradient */
     margin: 0;
     padding: 0;
 }
@@ -41,15 +41,15 @@ input, select {
 }
 
 input:focus, select:focus {
-    border-color: #1abc9c;
+    border-color: #98FF98;
     outline: none;
 }
 
 button {
     margin-top: 25px;
     padding: 12px;
-    background-color: #1abc9c;
-    color: white;
+    background-color: #98FF98;
+    color: #2c3e50;
     border: none;
     border-radius: 6px;
     font-size: 16px;
@@ -58,7 +58,7 @@ button {
 }
 
 button:hover {
-    background-color: #16a085;
+    background-color: #7ed97e;
 }
 
 @media screen and (max-width: 600px) {

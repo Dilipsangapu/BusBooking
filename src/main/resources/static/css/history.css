@@ -1,6 +1,6 @@
 body {
     font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(to right, #a8edea, #dfffd6);
+    background: linear-gradient(to right, #98FF98, #d0ffd0); /* Mint gradient */
     margin: 0;
     padding: 0;
 }
@@ -11,27 +11,27 @@ body {
     padding: 30px;
     background-color: #ffffff;
     border-radius: 12px;
-    box-shadow: 0 0 20px rgba(0, 128, 128, 0.1);
+    box-shadow: 0 0 20px rgba(0, 128, 0, 0.1); /* Soft mint shadow */
 }
 
 h2 {
     text-align: center;
-    color: #2f4f4f;
+    color: #2c3e50;
     margin-bottom: 30px;
 }
 
 .booking-card {
     padding: 20px 25px;
-    background: #f7fff9;
-    border: 1px solid #c3f5d5;
+    background: #f4fff4; /* Very light mint background */
+    border: 1px solid #c6f9c6; /* Mint border */
     border-radius: 10px;
     margin-bottom: 25px;
-    box-shadow: 0 3px 6px rgba(0, 128, 128, 0.1);
+    box-shadow: 0 3px 6px rgba(0, 128, 0, 0.1);
 }
 
 .booking-card h3 {
     margin-top: 0;
-    color: #00675b;
+    color: #2e5033; /* Deep green for headers */
 }
 
 .booking-card p {
@@ -50,17 +50,18 @@ li {
 
 .btn {
     display: inline-block;
-    background-color: #20c997;
-    color: white;
+    background-color: #98FF98;
+    color: #2c3e50;
     padding: 10px 18px;
     text-decoration: none;
     border-radius: 6px;
     font-weight: bold;
     margin-top: 10px;
+    transition: background-color 0.3s ease;
 }
 
 .btn:hover {
-    background-color: #198754;
+    background-color: #7ed97e;
 }
 
 .no-history {
@@ -75,9 +76,10 @@ li {
     margin-top: 30px;
     font-weight: bold;
     text-decoration: none;
-    color: #00675b;
+    color: #2e5033;
 }
 
 .back-link:hover {
     text-decoration: underline;
+    color: #225522;
 }

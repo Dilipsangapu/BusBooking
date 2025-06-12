@@ -1,8 +1,8 @@
-/* Body with soft mint gradient and fade-in */
+/* Body with mint gradient and fade-in */
 body {
     margin: 0;
     font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(to right, #a8edea, #fed6e3);
+    background: linear-gradient(to right, #98FF98, #d0ffd0); /* Updated mint gradient */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -33,12 +33,12 @@ body {
 
 h2 {
     margin-bottom: 25px;
-    color: #2f4f4f;
+    color: #2c3e50;
     transition: color 0.3s ease;
 }
 
 h2:hover {
-    color: #20c997;
+    color: #7ed97e;
 }
 
 label {
@@ -46,7 +46,7 @@ label {
     text-align: left;
     margin: 10px 0 5px;
     font-weight: bold;
-    color: #333;
+    color: #2e5033;
     transition: all 0.2s ease;
 }
 
@@ -62,13 +62,13 @@ input[type="password"] {
 
 input[type="email"]:focus,
 input[type="password"]:focus {
-    box-shadow: 0 0 8px rgba(32, 201, 151, 0.5);
+    box-shadow: 0 0 8px rgba(152, 255, 152, 0.6);
     outline: none;
 }
 
 .btn {
-    background-color: #20c997;
-    color: white;
+    background-color: #98FF98;
+    color: #2c3e50;
     padding: 10px 16px;
     border: none;
     border-radius: 6px;
@@ -76,10 +76,11 @@ input[type="password"]:focus {
     width: 100%;
     font-size: 16px;
     transition: background-color 0.3s ease, transform 0.2s ease;
+    font-weight: bold;
 }
 
 .btn:hover {
-    background-color: #17a589;
+    background-color: #7ed97e;
     transform: scale(1.05);
 }
 
@@ -99,7 +100,7 @@ p {
 }
 
 a {
-    color: #20c997;
+    color: #2e5033;
     text-decoration: none;
     font-weight: bold;
     transition: color 0.2s ease;
@@ -107,5 +108,5 @@ a {
 
 a:hover {
     text-decoration: underline;
-    color: #148c74;
+    color: #225522;
 }

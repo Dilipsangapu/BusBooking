@@ -1,16 +1,16 @@
 .navbar {
-    background: linear-gradient(to right, #a8edea, #fed6e3); /* Mint pink mix */
+    background: linear-gradient(to right, #98FF98, #d0ffd0); /* Soft mint gradient */
     padding: 15px 30px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-radius: 0 0 10px 10px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 8px rgba(0, 128, 0, 0.1); /* Mint-tinted shadow */
 }
 
 .navbar h2 {
     margin: 0;
-    color: #333;
+    color: #2c3e50;
     font-size: 24px;
 }
 
@@ -28,10 +28,11 @@
 
 .navbar a {
     text-decoration: none;
-    color: #333;
+    color: #2c3e50;
     font-weight: 600;
+    transition: color 0.2s ease;
 }
 
 .navbar a:hover {
-    color: #007bff;
+    color: #3c7041; /* Deeper mint-compatible hover */
 }

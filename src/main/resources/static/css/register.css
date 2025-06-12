@@ -1,6 +1,6 @@
 body {
     font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(to right, #c2f0c2, #e0f7e0);
+    background: linear-gradient(to right, #98FF98, #d0ffd0); /* Mint gradient */
     margin: 0;
     padding: 0;
     animation: fadeIn 0.6s ease-in;
@@ -12,14 +12,14 @@ body {
     padding: 30px;
     background: white;
     border-radius: 12px;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 20px rgba(0, 128, 0, 0.1); /* Soft mint shadow */
     transition: all 0.3s ease;
     animation: slideUp 0.5s ease-in-out;
 }
 
 h2 {
     text-align: center;
-    color: #2e7d32;
+    color: #2c3e50;
     margin-bottom: 25px;
     animation: fadeIn 0.8s;
 }
@@ -28,7 +28,7 @@ label {
     display: block;
     margin-top: 15px;
     font-weight: bold;
-    color: #333;
+    color: #2e5033;
 }
 
 input[type="text"],
@@ -43,25 +43,26 @@ input[type="password"] {
 }
 
 input:focus {
-    border-color: #81c784;
+    border-color: #98FF98;
     outline: none;
 }
 
 .btn {
     width: 100%;
     margin-top: 25px;
-    background-color: #66bb6a;
-    color: white;
+    background-color: #98FF98;
+    color: #2c3e50;
     padding: 10px;
     border: none;
     border-radius: 6px;
     font-size: 16px;
     cursor: pointer;
     transition: background-color 0.3s;
+    font-weight: bold;
 }
 
 .btn:hover {
-    background-color: #43a047;
+    background-color: #7ed97e;
 }
 
 p {
@@ -71,12 +72,14 @@ p {
 }
 
 a {
-    color: #2e7d32;
+    color: #2e5033;
     text-decoration: none;
+    font-weight: bold;
 }
 
 a:hover {
     text-decoration: underline;
+    color: #225522;
 }
 
 /* Animations */

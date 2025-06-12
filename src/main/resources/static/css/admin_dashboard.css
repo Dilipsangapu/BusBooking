@@ -1,6 +1,6 @@
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #e0f7fa, #fce4ec);
+    background: linear-gradient(135deg, #98FF98, #d0ffd0); /* Updated gradient */
     margin: 0;
     padding: 0;
 }
@@ -23,15 +23,16 @@ h2 {
 .add-bus-btn {
     display: inline-block;
     margin-bottom: 15px;
-    background-color: #2ecc71;
-    color: white;
+    background-color: #98FF98;
+    color: #2c3e50;
     padding: 8px 16px;
     border-radius: 6px;
     font-weight: bold;
+    transition: background-color 0.3s ease;
 }
 
 .add-bus-btn:hover {
-    background-color: #27ae60;
+    background-color: #7ed97e;
 }
 
 /* Table styling */
@@ -42,8 +43,8 @@ table {
 }
 
 thead tr {
-    background-color: #dcedc8;
-    color: #333;
+    background-color: #caffca; /* Light mint for header */
+    color: #2c3e50;
 }
 
 th, td {
@@ -54,7 +55,7 @@ th, td {
 }
 
 tr:hover {
-    background-color: #f9f9f9;
+    background-color: #f4fff4;
 }
 
 td:last-child {
@@ -63,22 +64,28 @@ td:last-child {
 
 /* Action buttons */
 .edit-btn {
-    background-color: #3498db;
-    color: white;
+    background-color: #98FF98;
+    color: #2c3e50;
     padding: 6px 10px;
     border-radius: 4px;
     text-decoration: none;
     margin-right: 5px;
+    transition: background-color 0.3s ease;
 }
 
 .delete-btn {
-    background-color: #e74c3c;
+    background-color: #ff6b6b;
     color: white;
     padding: 6px 10px;
     border-radius: 4px;
     text-decoration: none;
+    transition: background-color 0.3s ease;
 }
 
-.edit-btn:hover, .delete-btn:hover {
-    opacity: 0.85;
+.edit-btn:hover {
+    background-color: #7ed97e;
+}
+
+.delete-btn:hover {
+    background-color: #e05656;
 }

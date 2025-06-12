@@ -2,7 +2,7 @@
 body {
     margin: 0;
     font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(to right, #a8edea, #fed6e3);
+    background: linear-gradient(to right, #98FF98, #d0ffd0); /* Mint gradient */
     display: flex;
     flex-direction: column;
     min-height: 100vh;
@@ -19,7 +19,7 @@ body {
     background: #ffffff;
     padding: 40px;
     border-radius: 14px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 24px rgba(0, 128, 0, 0.1); /* Mint-tinted shadow */
     max-width: 500px;
     margin: 40px auto;
     animation: slideUp 0.5s ease-out;
@@ -32,14 +32,14 @@ body {
 
 h2 {
     text-align: center;
-    color: #2f4f4f;
+    color: #2c3e50;
     margin-bottom: 25px;
     font-size: 28px;
     transition: color 0.3s ease;
 }
 
 h2:hover {
-    color: #20c997;
+    color: #7ed97e;
 }
 
 p {
@@ -54,7 +54,7 @@ p:hover {
 }
 
 strong {
-    color: #00796b;
+    color: #2e5033; /* Deeper mint-accented tone */
 }
 
 /* Back link styling */
@@ -62,15 +62,16 @@ a {
     display: inline-block;
     margin-top: 20px;
     text-decoration: none;
-    background-color: #20c997;
-    color: white;
+    background-color: #98FF98;
+    color: #2c3e50;
     padding: 10px 18px;
     border-radius: 6px;
     transition: background-color 0.3s ease, transform 0.2s ease;
     text-align: center;
+    font-weight: bold;
 }
 
 a:hover {
-    background-color: #17a589;
+    background-color: #7ed97e;
     transform: scale(1.05);
 }

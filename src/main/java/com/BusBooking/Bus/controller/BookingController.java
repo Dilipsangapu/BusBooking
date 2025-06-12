@@ -81,7 +81,6 @@ public class BookingController {
         List<Integer> seatNumbers = Arrays.stream(seatNumber.split(","))
                 .map(String::trim).map(Integer::parseInt).toList();
 
-        // ✅ Step: Block seats already booked (respecting seatType)
         List<Booking> existingBookings = bookingRepository.findByBusIdAndTravelDate(busId, travelSqlDate);
         Set<String> alreadyBooked = new HashSet<>();
 
@@ -95,11 +94,9 @@ public class BookingController {
             String key = seatType.get(i).toLowerCase() + "-" + seatNumbers.get(i);
             if (alreadyBooked.contains(key)) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                        Map.of("error", "Seat " + seatNumbers.get(i) + " (" + seatType.get(i) + ") is already booked.")
-                );
+                        Map.of("error", "Seat " + seatNumbers.get(i) + " (" + seatType.get(i) + ") is already booked."));
             }
         }
-
 
         List<Passenger> passengers = new ArrayList<>();
         for (int i = 0; i < passengerName.size(); i++) {
@@ -108,15 +105,13 @@ public class BookingController {
                     passengerAge.get(i),
                     passengerGender.get(i),
                     seatNumbers.get(i),
-                    seatType.get(i)
-            ));
+                    seatType.get(i)));
         }
 
         double total = passengers.stream().mapToDouble(p ->
                 p.getSeatType().equalsIgnoreCase("Seater")
                         ? bus.getSeaterPrice()
-                        : bus.getSleeperPrice()
-        ).sum();
+                        : bus.getSleeperPrice()).sum();
 
         Booking booking = Booking.builder()
                 .busId(busId)
@@ -140,7 +135,7 @@ public class BookingController {
 
         try {
             byte[] pdf = TicketPDFGenerator.generateTicketPDF(booking, bus);
-            emailService.sendTicket(booking.getEmail(), pdf, "ticket_" + booking.getId() + ".pdf");
+            emailService.sendTicket(booking.getEmail(), pdf, "ticket_" + booking.getId() + ".pdf", booking, bus);
         } catch (MessagingException | IOException e) {
             e.printStackTrace();
         } catch (Exception e) {
@@ -228,6 +223,7 @@ public class BookingController {
 
         return Map.of("Seater", seater, "Sleeper", sleeper);
     }
+
     @GetMapping("/history")
     @Operation(summary = "Booking history page")
     public String bookingHistory(Principal principal, Model model) {
@@ -240,7 +236,6 @@ public class BookingController {
         User user = userOpt.get();
         List<Booking> bookings = bookingRepository.findByUserId(user.getId());
 
-        // Load bus info for each booking
         Map<String, Bus> busMap = new HashMap<>();
         for (Booking b : bookings) {
             busRepository.findById(b.getBusId()).ifPresent(bus -> busMap.put(b.getId(), bus));
@@ -249,7 +244,6 @@ public class BookingController {
         model.addAttribute("bookings", bookings);
         model.addAttribute("busMap", busMap);
         model.addAttribute("user", user);
-        return "history"; // <-- must match history.html
+        return "history";
     }
-
 }
