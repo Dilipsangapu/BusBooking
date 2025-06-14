@@ -4,8 +4,10 @@ services:
     env: docker
     plan: free
     dockerfilePath: Dockerfile
-    buildCommand: ""
-    startCommand: ""
+    buildCommand: ""   # Not needed because Dockerfile handles the build
+    startCommand: ""   # Not needed because Dockerfile has ENTRYPOINT
     envVars:
       - key: SPRING_PROFILES_ACTIVE
         value: production
+      - key: PORT
+        value: 8080

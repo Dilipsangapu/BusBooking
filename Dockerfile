@@ -1,14 +1,22 @@
-# Use Eclipse Temurin JDK 21 base image
-FROM eclipse-temurin:21-jdk-jammy
+# Stage 1: Build with Maven
+FROM maven:3.9.6-eclipse-temurin-21 AS build
 
-# Set the working directory in the container
 WORKDIR /app
 
-# Add the jar file to the container
-COPY target/BusBooking-0.0.1-SNAPSHOT.jar app.jar
+# Copy everything and build the app
+COPY . .
+RUN mvn clean package -DskipTests
 
-# Expose the port the app runs on
+# Stage 2: Run the app with a smaller JDK image
+FROM eclipse-temurin:21-jdk-jammy
+
+WORKDIR /app
+
+# Copy the JAR from the build stage
+COPY --from=build /app/target/*.jar app.jar
+
+# Expose port
 EXPOSE 8080
 
-# Run the application
-ENTRYPOINT ["java","-jar","/app/app.jar"]
+# Run the app
+ENTRYPOINT ["java", "-jar", "app.jar"]
