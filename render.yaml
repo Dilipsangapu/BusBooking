@@ -1,5 +1,11 @@
 services:
   - type: web
     name: bus-booking
-    runtime: docker
+    env: docker
     plan: free
+    dockerfilePath: Dockerfile
+    buildCommand: ""
+    startCommand: ""
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: production
