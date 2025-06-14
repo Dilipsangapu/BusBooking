@@ -1,14 +1,26 @@
-# Use an official JDK image
-FROM openjdk:17-jdk-slim
+# Dockerfile
 
-# Set working directory
+# Step 1: Build the application
+FROM maven:3.9.6-eclipse-temurin-17 AS builder
+
 WORKDIR /app
 
-# Copy the built jar (update the JAR name if needed)
-COPY target/Bus-0.0.1-SNAPSHOT.jar app.jar
+# Copy the entire project to the image
+COPY . .
 
-# Expose the port your Spring Boot app runs on
+# Build the project and skip tests
+RUN mvn clean package -DskipTests
+
+# Step 2: Create a smaller image with only the jar file
+FROM openjdk:17-jdk-slim
+
+WORKDIR /app
+
+# Copy only the built jar from the builder image
+COPY --from=builder /app/target/Bus-0.0.1-SNAPSHOT.jar app.jar
+
+# Expose port if needed (optional)
 EXPOSE 8080
 
-# Command to run the jar
+# Start the Spring Boot application
 ENTRYPOINT ["java", "-jar", "app.jar"]
