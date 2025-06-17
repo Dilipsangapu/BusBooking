@@ -1,29 +1,70 @@
-/* Body with mint gradient and fade-in */
 body {
     margin: 0;
-    font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(to right, #98FF98, #d0ffd0); /* Updated mint gradient */
+    font-family: 'Inter', sans-serif;
+    background-color: #f5fff5; /* Light mint background */
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.main-container {
     display: flex;
     justify-content: center;
+    align-items: stretch;
+    width: 90%;
+    max-width: 1000px;
+    background-color: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.quote-panel {
+    background-color: #d4fdd4; /* Soft light green */
+    flex: 1;
+    padding: 40px 30px;
+    color: #2e5033;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
-    height: 100vh;
-    animation: fadeIn 1s ease-in;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* Login container styling */
-.container {
-    background: white;
-    padding: 30px 40px;
-    border-radius: 14px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-    width: 350px;
     text-align: center;
-    animation: slideUp 0.7s ease-out;
+}
+
+.quote-logo {
+    width: 70px;
+    height: 70px;
+    margin-bottom: 12px;
+}
+
+.brand-name {
+    font-size: 26px;
+    margin-bottom: 20px;
+    font-weight: 700;
+    color: #2e5033;
+}
+
+.quote-text {
+    font-size: 18px;
+    margin: 8px 0;
+    font-style: italic;
+}
+
+.quote-subtext {
+    margin-top: 20px;
+    font-size: 15px;
+    color: #444;
+}
+
+.login-card {
+    flex: 1;
+    padding: 40px;
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    animation: slideUp 0.8s ease-out;
 }
 
 @keyframes slideUp {
@@ -31,82 +72,83 @@ body {
     100% { opacity: 1; transform: translateY(0); }
 }
 
-h2 {
-    margin-bottom: 25px;
+.login-title {
+    text-align: center;
+    margin-bottom: 24px;
+    font-size: 24px;
     color: #2c3e50;
-    transition: color 0.3s ease;
-}
-
-h2:hover {
-    color: #7ed97e;
-}
-
-label {
-    display: block;
-    text-align: left;
-    margin: 10px 0 5px;
-    font-weight: bold;
-    color: #2e5033;
-    transition: all 0.2s ease;
-}
-
-input[type="email"],
-input[type="password"] {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    margin-bottom: 15px;
-    transition: box-shadow 0.3s ease;
-}
-
-input[type="email"]:focus,
-input[type="password"]:focus {
-    box-shadow: 0 0 8px rgba(152, 255, 152, 0.6);
-    outline: none;
-}
-
-.btn {
-    background-color: #98FF98;
-    color: #2c3e50;
-    padding: 10px 16px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    width: 100%;
-    font-size: 16px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    font-weight: bold;
-}
-
-.btn:hover {
-    background-color: #7ed97e;
-    transform: scale(1.05);
 }
 
 .alert-danger {
     background-color: #ffdddd;
     color: #d8000c;
-    padding: 10px;
-    margin-bottom: 15px;
-    border-radius: 5px;
-    border: 1px solid #f5c6cb;
-    animation: fadeIn 0.5s ease-in-out;
+    padding: 12px 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    text-align: center;
 }
 
-p {
-    margin-top: 15px;
+.form-group {
+    margin-bottom: 18px;
+}
+
+label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: #2e5033;
+}
+
+input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+input:focus {
+    border-color: #7ed97e;
+    box-shadow: 0 0 6px rgba(126, 217, 126, 0.4);
+    outline: none;
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: #98FF98;
+    color: #2c3e50;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-primary:hover {
+    background-color: #7ed97e;
+    transform: scale(1.03);
+}
+
+.bottom-links {
+    margin-top: 18px;
+    text-align: center;
     font-size: 14px;
 }
 
-a {
+.link {
     color: #2e5033;
     text-decoration: none;
-    font-weight: bold;
+    font-weight: 600;
+    margin: 0 5px;
     transition: color 0.2s ease;
 }
 
-a:hover {
-    text-decoration: underline;
+.link:hover {
     color: #225522;
+    text-decoration: underline;
 }
