@@ -1,20 +1,67 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Dashboard</title>
+    <title>Dashboard | Online Bus Booking</title>
     <link rel="stylesheet" href="/css/navbar.css">
     <link rel="stylesheet" href="/css/dashboard.css">
 </head>
 <body>
-<div th:replace="fragments/navbar :: navbar"></div>
-<div class="container">
-    <h2>Welcome to the Dashboard</h2>
-    <p th:text="'Hello, ' + ${user.name} + '!'"></p>
 
-    <a th:href="@{/search}">Search Buses</a> |
-    <a th:href="@{/history}">Booking History</a> |
-    <a th:href="@{/logout}">Logout</a>
+<!-- Navbar -->
+<div th:replace="fragments/navbar :: navbar"></div>
+
+<!-- Split Screen Layout -->
+<div class="dashboard-split">
+
+    <!-- Left Panel -->
+    <div class="left-panel">
+        <h2 class="brand-title">Online Bus Booking</h2>
+        <p class="user-greeting" th:text="'Hi, ' + ${user.name} + '!'"></p>
+        <p class="quote">"Travel is the only thing you buy that makes you richer."</p>
+
+        <div class="nav-links">
+            <a th:href="@{/search}" class="nav-btn">Search Buses</a>
+            <a th:href="@{/logout}" class="nav-btn logout">Logout</a>
+        </div>
+    </div>
+
+    <!-- Right Panel -->
+    <div class="right-panel">
+        <h3>Your Booking History</h3>
+
+        <div class="history-cards">
+            <div class="history-card" th:each="booking : ${bookings}">
+                <h4>🚌 Bus ID: <span th:text="${booking.busId}"></span></h4>
+                <p><strong>Booking Date:</strong>
+                    <span th:text="${#dates.format(booking.bookingDate, 'dd-MM-yyyy HH:mm')}"></span>
+                </p>
+                <p><strong>Travel Date:</strong>
+                    <span th:text="${#dates.format(booking.travelDate, 'dd-MM-yyyy')}"></span>
+                </p>
+                <p><strong>Total Paid:</strong> ₹<span th:text="${booking.totalAmount}"></span></p>
+                <p><strong>Passengers:</strong> <span th:text="${#lists.size(booking.passengers)}">0</span></p>
+            </div>
+        </div>
+
+
+        <div class="card summary">
+            <h4>Total Trips</h4>
+            <p th:text="${bookingCount} + ' completed'"></p>
+        </div>
+
+        <div class="card summary">
+            <h4>Last Destination</h4>
+            <p th:text="${lastDestination}">Hyderabad</p>
+        </div>
+
+        <div class="card summary">
+            <h4>Need Help?</h4>
+            <p><a th:href="@{/support}">Contact Support</a></p>
+        </div>
+    </div>
 </div>
+
+<!-- Footer -->
 <div th:replace="fragments/footer :: footer"></div>
 
 </body>

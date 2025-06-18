@@ -25,5 +25,7 @@ public class Booking {
     private Double totalAmount;
     private Date travelDate;
     private String email;
+    private String source;
+    private String destination;
     private List<Passenger> passengers;
 }

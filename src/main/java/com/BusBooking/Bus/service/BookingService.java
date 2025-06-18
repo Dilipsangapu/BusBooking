@@ -19,8 +19,6 @@ public class BookingService {
     private final BusRepository busRepository;
 
     public void createBooking(String userId, Bus bus, List<Passenger> passengers, List<Integer> seatNumbers) {
-
-        // ✅ Calculate total amount based on seat type
         double totalAmount = 0;
         for (Passenger p : passengers) {
             if (p.getSeatType().equalsIgnoreCase("Sleeper")) {
@@ -38,7 +36,6 @@ public class BookingService {
                 .totalAmount(totalAmount)
                 .build();
 
-        // ✅ Update booked seats
         if (bus.getBookedSeats() == null) {
             bus.setBookedSeats(seatNumbers);
         } else {
@@ -51,5 +48,19 @@ public class BookingService {
 
     public List<Booking> getBookingsForUser(String userId) {
         return bookingRepository.findByUserId(userId);
+    }
+
+    // ✅ NEW
+    public List<Booking> getLatestTwoBookings(String userId) {
+        return bookingRepository.findTop2ByUserIdOrderByBookingDateDesc(userId);
+    }
+
+    public long countBookingsByUserId(String userId) {
+        return bookingRepository.findByUserId(userId).size();
+    }
+
+    public String getLastDestination(String userId) {
+        List<Booking> bookings = bookingRepository.findTop1ByUserIdOrderByTravelDateDesc(userId);
+        return bookings.isEmpty() ? "N/A" : bookings.get(0).getDestination();
     }
 }

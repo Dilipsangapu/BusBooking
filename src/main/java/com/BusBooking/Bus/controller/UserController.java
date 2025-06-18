@@ -4,6 +4,7 @@ import com.BusBooking.Bus.model.Booking;
 import com.BusBooking.Bus.model.User;
 import com.BusBooking.Bus.repository.BookingRepository;
 import com.BusBooking.Bus.repository.UserRepository;
+import com.BusBooking.Bus.service.BookingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
@@ -28,6 +29,8 @@ public class UserController {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final BookingRepository bookingRepository;
+    private final BookingService bookingService;
+
 
     @GetMapping("/register")
     @Operation(summary = "Show user registration form")
@@ -94,9 +97,18 @@ public class UserController {
             ));
         }
 
+        List<Booking> recentBookings = bookingService.getLatestTwoBookings(user.getId());
+        long bookingCount = bookingService.countBookingsByUserId(user.getId());
+        String lastDestination = bookingService.getLastDestination(user.getId());
+
         model.addAttribute("user", user);
+        model.addAttribute("bookings", recentBookings);
+        model.addAttribute("bookingCount", bookingCount);
+        model.addAttribute("lastDestination", lastDestination);
+
         return "dashboard";
     }
+
 
     @GetMapping("/profile")
     @Operation(summary = "User profile")
@@ -166,5 +178,8 @@ public class UserController {
         model.addAttribute("message", "✅ Password reset successfully. Please log in.");
         return "forgot-password";
     }
-
+    @GetMapping("/support")
+    public String supportPage() {
+        return "support"; // This should match support.html in templates folder
+    }
 }

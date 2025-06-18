@@ -6,33 +6,75 @@
     align-items: center;
     border-radius: 0 0 10px 10px;
     box-shadow: 0 4px 8px rgba(0, 128, 0, 0.1); /* Mint-tinted shadow */
+    flex-wrap: wrap;
 }
 
 .navbar h2 {
     margin: 0;
     color: #2c3e50;
     font-size: 24px;
+    font-weight: bold;
 }
 
 .navbar ul {
     list-style: none;
     display: flex;
-    gap: 20px;
+    gap: 16px;
     margin: 0;
     padding: 0;
+    flex-wrap: wrap;
 }
 
 .navbar ul li {
-    display: inline;
+    display: inline-block;
 }
 
 .navbar a {
     text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    background-color: #ffffff;
     color: #2c3e50;
     font-weight: 600;
-    transition: color 0.2s ease;
+    transition: background-color 0.3s ease, transform 0.2s;
 }
 
 .navbar a:hover {
-    color: #3c7041; /* Deeper mint-compatible hover */
+    background-color: #c6f5c6;
+    color: #3c7041;
+    transform: scale(1.05);
+}
+
+.navbar a.logout {
+    background-color: #ff4d4d;
+    color: white;
+}
+
+.navbar a.logout:hover {
+    background-color: #cc0000;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .navbar ul {
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+    }
+
+    .navbar ul li {
+        width: 100%;
+    }
+
+    .navbar a {
+        display: block;
+        width: 100%;
+        text-align: left;
+    }
 }
