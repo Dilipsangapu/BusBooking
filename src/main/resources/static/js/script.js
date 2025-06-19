@@ -146,12 +146,31 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-// -------------------- Razorpay Integration + Booking + Conflict Handling --------------------
+// -------------------- Razorpay Integration + Booking + Validation --------------------
 function initiatePayment() {
     const travelDate = document.getElementById("travelDateInput").value;
     if (!travelDate) {
-        alert("Please select a travel date");
+        alert("Please select a travel date.");
         return;
+    }
+
+    const passengerGroups = document.querySelectorAll(".passenger-group");
+    for (const group of passengerGroups) {
+        const name = group.querySelector("input[name='passengerName']").value.trim();
+        const age = group.querySelector("input[name='passengerAge']").value.trim();
+        const gender = group.querySelector("select[name='passengerGender']").value;
+        const seatType = group.querySelector("select[name='seatType']").value;
+        const seatNumber = group.querySelector("input[name='seatNumber']").value;
+
+        if (!name || !age || !gender || !seatType || !seatNumber) {
+            alert("❌ Please fill all passenger details and select a seat.");
+            return;
+        }
+
+        if (isNaN(age) || age <= 0) {
+            alert("❌ Please enter a valid age.");
+            return;
+        }
     }
 
     fetch("/api/payment/create-order", {
@@ -177,7 +196,7 @@ function initiatePayment() {
                 const form = document.getElementById("bookingForm");
 
                 const formData = new FormData(form);
-              formData.set("travelDate", travelDate);
+                formData.set("travelDate", travelDate);
                 formData.append("paymentId", response.razorpay_payment_id);
                 formData.append("orderId", order.id);
                 formData.append("receipt", order.receipt);

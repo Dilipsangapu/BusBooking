@@ -16,6 +16,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
+import java.nio.file.Paths;
+
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
@@ -37,7 +39,11 @@ public class SecurityConfig {
                         .requestMatchers(new SwaggerRequestMatcher()).permitAll()
 
                         // ✅ Allow login, registration, static resources
-                        .requestMatchers("/login", "/register", "/forgot-password", "/logout", "/css/**", "/js/**","/logo.png", "/images/**").permitAll()
+                        .requestMatchers(
+                                "/login", "/register", "/forgot-password", "/logout",
+                                "/css/**", "/js/**", "/logo.png", "/images/**", "/uploads/**" // ← Added uploads
+                        ).permitAll()
+
 
                         // 🔐 Protect everything else for browser
                         .anyRequest().authenticated()
@@ -98,4 +104,15 @@ public class SecurityConfig {
             return userAgent != null && userAgent.toLowerCase().contains("swagger");
         }
     }
+    @Bean
+    public org.springframework.web.servlet.config.annotation.WebMvcConfigurer exposeUploadsFolder() {
+        return new org.springframework.web.servlet.config.annotation.WebMvcConfigurer() {
+            @Override
+            public void addResourceHandlers(org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry registry) {
+                String uploadPath = Paths.get(System.getProperty("user.dir"), "uploads").toUri().toString();
+                registry.addResourceHandler("/uploads/**").addResourceLocations(uploadPath);
+            }
+        };
+    }
+
 }

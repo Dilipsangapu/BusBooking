@@ -17,6 +17,6 @@ public class User {
     private String email;
     private String password;
     private boolean verified = false;
-    private String role; // e.g., "USER", "ADMIN"
+    private String role;
+    private String profileImage;
 }
-

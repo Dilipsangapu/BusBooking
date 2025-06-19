@@ -4,33 +4,64 @@
     <title>Search Buses</title>
     <link rel="stylesheet" href="/css/navbar.css">
     <link rel="stylesheet" href="/css/search.css">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-<div class="container">
-    <h2>Search for Buses</h2>
-    <form method="get" th:action="@{/search}">
-        <label>From</label>
-        <input type="text" name="from" required>
+<div th:replace="fragments/navbar :: navbar"></div>
+<div class="search-container">
+    <h2 class="search-title">Book Your Journey</h2>
 
-        <label>To</label>
-        <input type="text" name="to" required>
+    <form method="get" th:action="@{/search}" class="search-form">
+        <div class="route-animation-wrapper">
+            <!-- From -->
+            <div class="location-box">
+                <label for="from">From</label>
+                <input type="text" id="from" name="from" placeholder="Leaving from..." required />
+            </div>
 
-        <button type="submit">Search</button>
+            <!-- Animated Route -->
+            <div class="svg-route">
+                <svg viewBox="0 0 300 100" class="route-svg">
+                    <path id="routePath" d="M10,90 Q150,10 290,90" fill="transparent" stroke="#007bff" stroke-dasharray="5,5" stroke-width="2" />
+                    <circle r="6" fill="#2e5033">
+                        <animateMotion repeatCount="indefinite" dur="3s" rotate="auto">
+                            <mpath href="#routePath" />
+                        </animateMotion>
+                    </circle>
+                </svg>
+            </div>
+
+            <!-- To -->
+            <div class="location-box">
+                <label for="to">To</label>
+                <input type="text" id="to" name="to" placeholder="Going to..." required />
+            </div>
+        </div>
+
+        <button type="submit" class="search-btn">Search Buses</button>
     </form>
 
-    <div th:if="${buses}">
-        <h3>Results:</h3>
-        <div th:each="bus : ${buses}">
-            <p>
-                <strong th:text="${bus.operatorName}"></strong> –
-                <span th:text="${bus.from}"></span> to
-                <span th:text="${bus.to}"></span><br/>
-                <a th:href="@{/bus/{id}(id=${bus.id})}">View Details</a>
-            </p>
-            <hr/>
+    <div th:if="${buses != null}" class="results-container">
+        <h3 class="results-title">Available Buses</h3>
+
+        <!-- If buses found -->
+        <div th:if="${#lists.isEmpty(buses) == false}">
+            <div th:each="bus : ${buses}" class="bus-card">
+                <p class="bus-details">
+                    <strong th:text="${bus.operatorName}" class="bus-operator">Operator Name</strong><br />
+                    <span th:text="${bus.from}" class="bus-route-from">From</span> to
+                    <span th:text="${bus.to}" class="bus-route-to">To</span>
+                </p>
+                <a th:href="@{/bus/{id}(id=${bus.id})}" class="details-link">View Details →</a>
+            </div>
+        </div>
+
+        <!-- If no buses -->
+        <div th:if="${#lists.isEmpty(buses)}" class="no-results">
+            <p>No buses found for the selected route.</p>
         </div>
     </div>
 </div>
+<div th:replace="fragments/footer :: footer"></div>
 </body>
 </html>

@@ -7,7 +7,10 @@ import com.BusBooking.Bus.repository.UserRepository;
 import com.BusBooking.Bus.service.BookingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpSession;
+import org.springframework.web.multipart.MultipartFile;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -180,6 +183,38 @@ public class UserController {
     }
     @GetMapping("/support")
     public String supportPage() {
-        return "support"; // This should match support.html in templates folder
+        return "support";
     }
+    @PostMapping("/profile/upload")
+    public String uploadProfileImage(@RequestParam("image") MultipartFile file, Principal principal) {
+        String email = principal.getName();
+        Optional<User> userOpt = userRepository.findByEmail(email);
+
+        if (userOpt.isEmpty() || file.isEmpty()) {
+            return "redirect:/profile";
+        }
+
+        try {
+            // Use 'uploads' directory at root of the project
+            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+            Path uploadDir = Paths.get(System.getProperty("user.dir"), "uploads"); // Runtime folder
+            if (!Files.exists(uploadDir)) {
+                Files.createDirectories(uploadDir);
+            }
+
+            Path filePath = uploadDir.resolve(fileName);
+            Files.write(filePath, file.getBytes());
+
+            User user = userOpt.get();
+            user.setProfileImage("/uploads/" + fileName); // URL served by Spring Boot
+            userRepository.save(user);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return "redirect:/profile";
+    }
+
+
 }

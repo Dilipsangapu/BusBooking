@@ -2,7 +2,7 @@
 body {
     margin: 0;
     font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(to right, #98FF98, #d0ffd0); /* Mint gradient */
+    background: linear-gradient(to right, #98FF98, #d0ffd0);
     display: flex;
     flex-direction: column;
     min-height: 100vh;
@@ -15,19 +15,94 @@ body {
 }
 
 /* Profile card container */
-.container {
+.profile-container {
+    max-width: 700px;
+    margin: 60px auto;
+    padding: 30px;
+}
+
+.profile-card {
     background: #ffffff;
     padding: 40px;
     border-radius: 14px;
-    box-shadow: 0 8px 24px rgba(0, 128, 0, 0.1); /* Mint-tinted shadow */
-    max-width: 500px;
-    margin: 40px auto;
+    box-shadow: 0 8px 24px rgba(0, 128, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 30px;
     animation: slideUp 0.5s ease-out;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.profile-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 28px rgba(0, 128, 0, 0.15);
 }
 
 @keyframes slideUp {
-    0% { opacity: 0; transform: translateY(40px); }
-    100% { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.profile-image-wrapper {
+    flex-shrink: 0;
+    width: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.profile-image {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid #98FF98;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.profile-image:hover {
+    transform: scale(1.05);
+}
+
+/* Upload form styles */
+.upload-form {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    align-items: center;
+}
+
+.upload-form input[type="file"] {
+    font-size: 14px;
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: #f9f9f9;
+    width: 100%;
+    cursor: pointer;
+}
+
+.upload-form button {
+    padding: 8px 12px;
+    background-color: #98FF98;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    margin-top: 5px;
+}
+
+.upload-form button:hover {
+    background-color: #7ed97e;
+}
+
+/* Profile info */
+.profile-info {
+    flex: 1;
 }
 
 h2 {
@@ -54,7 +129,7 @@ p:hover {
 }
 
 strong {
-    color: #2e5033; /* Deeper mint-accented tone */
+    color: #2e5033;
 }
 
 /* Back link styling */

@@ -4,23 +4,40 @@
     <title>User Profile</title>
     <link rel="stylesheet" href="/css/navbar.css">
     <link rel="stylesheet" href="/css/profile.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
 <!-- Shared navbar -->
 <div th:replace="fragments/navbar :: navbar"></div>
 
-<div class="container">
-    <h2>Your Profile</h2>
+<div class="profile-container">
+    <div class="profile-card">
+        <!-- Profile Image -->
+        <div class="profile-image-wrapper">
+            <img th:src="${user.profileImage != null} ? ${user.profileImage} : '/uploads/default-avatar.png'" alt="Profile Image" class="profile-image">
 
-    <p><strong>Name:</strong> <span th:text="${user.name}"></span></p>
-    <p><strong>Email:</strong> <span th:text="${user.email}"></span></p>
-    <p><strong>Role:</strong> <span th:text="${user.role}"></span></p>
+            <!-- Upload Form -->
+            <form th:action="@{/profile/upload}" method="post" enctype="multipart/form-data" class="upload-form">
+                <input type="file" name="image" accept="image/*" required>
+                <button type="submit">Upload New Photo</button>
+            </form>
+        </div>
 
-    <!-- Role-based redirection -->
-    <div>
-        <a th:if="${user.role == 'ADMIN'}" th:href="@{/admin/dashboard}">← Back to Admin Dashboard</a>
-        <a th:if="${user.role != 'ADMIN'}" th:href="@{/dashboard}">← Back to User Dashboard</a>
+        <!-- Profile Info -->
+        <div class="profile-info">
+            <h2 class="profile-heading">Your Profile</h2>
+
+            <p><strong>Name:</strong> <span th:text="${user.name}"></span></p>
+            <p><strong>Email:</strong> <span th:text="${user.email}"></span></p>
+            <p><strong>Role:</strong> <span th:text="${user.role}"></span></p>
+
+            <!-- Role-based redirection -->
+            <div class="back-link">
+                <a th:if="${user.role == 'ADMIN'}" th:href="@{/admin/dashboard}">← Back to Admin Dashboard</a>
+                <a th:if="${user.role != 'ADMIN'}" th:href="@{/dashboard}">← Back to User Dashboard</a>
+            </div>
+        </div>
     </div>
 </div>
 
