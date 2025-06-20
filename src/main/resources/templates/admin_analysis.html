@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Bus Analysis</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/admin_dashboard.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+</head>
+<body>
+<div th:replace="fragments/navbar :: navbar"></div>
+<div class="container">
+    <h2>📊 Bus Route & Revenue Analysis</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Operator</th>
+            <th>Route</th>
+            <th>Total Seats</th>
+            <th>Revenue (₹)</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="bus : ${buses}">
+            <td th:text="${bus.operatorName}"></td>
+            <td th:text="${bus.from + ' → ' + bus.to}"></td>
+            <td th:text="${bus.totalSeats}"></td>
+            <td>
+                <span>&#8377;</span> <span th:text="${bus.seaterPrice + bus.sleeperPrice}"></span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <a th:href="@{/admin/dashboard}" class="add-bus-btn">⬅ Back to Dashboard</a>
+</div>
+<div th:replace="fragments/footer :: footer"></div>
+</body>
+</html>

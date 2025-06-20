@@ -2,21 +2,46 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="/css/navbar.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/admin_dashboard.css">
+    <link rel="stylesheet" href="/css/navbar.css">
 </head>
 <body>
-
-
-<!-- Navbar -->
 <div th:replace="fragments/navbar :: navbar"></div>
-
 <div class="container">
     <h2>Admin Panel - Manage Buses</h2>
+
+    <!-- Dashboard Stats -->
+    <div class="dashboard-metrics">
+        <div class="metric-card">
+            <h3 th:text="${totalBuses}">0</h3>
+            <p>Total Buses</p>
+        </div>
+        <div class="metric-card">
+            <h3 th:text="${totalSeats}">0</h3>
+            <p>Total Seats</p>
+        </div>
+        <div class="metric-card">
+            <h3><span>&#8377;</span> <span th:text="${totalRevenue}">0</span></h3>
+            <p>Total Potential Revenue</p>
+        </div>
+        <div class="metric-card">
+            <a class="analysis-btn" th:href="@{/admin/analysis}">📊 View Analysis</a>
+        </div>
+    </div>
+
+    <!-- Search -->
+    <div class="filter-bar">
+        <input type="text" id="searchInput" placeholder="Search by operator, from or to...">
+    </div>
+
+    <!-- Add Bus -->
     <a th:href="@{/admin/add}" class="add-bus-btn">➕ Add New Bus</a>
     <hr>
 
-    <table>
+    <!-- Table -->
+    <table id="busTable">
         <thead>
         <tr>
             <th>Operator</th>
@@ -33,19 +58,19 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="bus : ${buses}">
-            <td th:text="${bus.operatorName}">Operator</td>
-            <td th:text="${bus.from}">From</td>
-            <td th:text="${bus.to}">To</td>
-            <td th:text="${bus.departureTime}">Dep</td>
-            <td th:text="${bus.arrivalTime}">Arr</td>
-            <td th:text="${bus.seaterPrice}">0</td>
-            <td th:text="${bus.sleeperPrice}">0</td>
-            <td th:text="${bus.seaterCount}">0</td>
-            <td th:text="${bus.sleeperCount}">0</td>
-            <td th:text="${bus.totalSeats}">0</td>
-            <td>
-                <a th:href="@{'/admin/edit/' + ${bus.id}}" class="edit-btn">✏️ Edit</a> |
+        <tr th:each="bus : ${buses}" th:data-search="${bus.operatorName + ' ' + bus.from + ' ' + bus.to}">
+            <td th:text="${bus.operatorName}"></td>
+            <td th:text="${bus.from}"></td>
+            <td th:text="${bus.to}"></td>
+            <td th:text="${bus.departureTime}"></td>
+            <td th:text="${bus.arrivalTime}"></td>
+            <td th:text="${bus.seaterPrice}"></td>
+            <td th:text="${bus.sleeperPrice}"></td>
+            <td th:text="${bus.seaterCount}"></td>
+            <td th:text="${bus.sleeperCount}"></td>
+            <td th:text="${bus.totalSeats}"></td>
+            <td class="action-col">
+                <a th:href="@{'/admin/edit/' + ${bus.id}}" class="edit-btn">✏️ Edit</a>
                 <a th:href="@{'/admin/delete/' + ${bus.id}}" class="delete-btn" onclick="return confirm('Delete this bus?')">❌ Delete</a>
             </td>
         </tr>
@@ -53,8 +78,20 @@
     </table>
 </div>
 
-<!-- Footer -->
-<div th:replace="fragments/footer :: footer"></div>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const input = document.getElementById("searchInput");
+        const rows = document.querySelectorAll("#busTable tbody tr");
 
+        input.addEventListener("input", () => {
+            const term = input.value.toLowerCase();
+            rows.forEach(row => {
+                const searchValue = row.getAttribute("data-search").toLowerCase();
+                row.style.display = searchValue.includes(term) ? "" : "none";
+            });
+        });
+    });
+</script>
+<div th:replace="fragments/footer :: footer"></div>
 </body>
 </html>

@@ -32,12 +32,39 @@ public class AdminController {
     public Object adminDashboard(@RequestParam(defaultValue = "false") boolean json, Model model) {
         List<Bus> buses = busRepository.findAll();
 
+        int totalBuses = buses.size();
+        int totalSeats = 0;
+        double totalRevenue = 0;
+
+        for (Bus bus : buses) {
+            totalSeats += Optional.ofNullable(bus.getTotalSeats()).orElse(0);
+            totalRevenue += Optional.ofNullable(bus.getSeaterPrice()).orElse(0.0)
+                    + Optional.ofNullable(bus.getSleeperPrice()).orElse(0.0);
+        }
+
         if (json) {
-            return ResponseEntity.ok(Map.of("buses", buses, "count", buses.size()));
+            return ResponseEntity.ok(Map.of(
+                    "buses", buses,
+                    "count", totalBuses,
+                    "seats", totalSeats,
+                    "revenue", totalRevenue
+            ));
         }
 
         model.addAttribute("buses", buses);
+        model.addAttribute("totalBuses", totalBuses);
+        model.addAttribute("totalSeats", totalSeats);
+        model.addAttribute("totalRevenue", totalRevenue);
+
         return "admin_dashboard";
+    }
+
+    @GetMapping("/analysis")
+    @Operation(summary = "Detailed analysis of all buses")
+    public String analysis(Model model) {
+        List<Bus> buses = busRepository.findAll();
+        model.addAttribute("buses", buses);
+        return "admin_analysis";
     }
 
     @GetMapping("/add")
@@ -85,6 +112,10 @@ public class AdminController {
     @Operation(summary = "Update existing bus")
     public Object updateBus(@ModelAttribute Bus bus,
                             @RequestParam(defaultValue = "false") boolean json) {
+        int total = (bus.getSeaterCount() != null ? bus.getSeaterCount() : 0)
+                + (bus.getSleeperCount() != null ? bus.getSleeperCount() : 0);
+        bus.setTotalSeats(total);
+
         busRepository.save(bus);
 
         if (json) {
